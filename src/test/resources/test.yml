@@ -1,0 +1,9 @@
+some:
+  int: 42
+  string: 'stringy'
+  list:
+  - one
+  - two
+  - three
+  section:
+    string: 'verystringy'
