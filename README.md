@@ -1,5 +1,5 @@
 
-[![Build Status](https://img.shields.io/travis/Pravian/Fabric.git)
+![Build Status](https://img.shields.io/travis/Pravian/Fabric.git)
 
 A commons library for all things java.
 
