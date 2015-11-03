@@ -25,7 +25,7 @@ public class JsonConfig extends AdapterConfig {
     public JsonConfig(Logger logger) {
         super(logger, new JsonAdapter(logger));
     }
-    
+
     @Override
     public FileConfigOptions options() {
         return getAdapter().options();
@@ -35,5 +35,5 @@ public class JsonConfig extends AdapterConfig {
     public void setAdapter(Adapter adapter) {
         throw new UnsupportedOperationException("Cannot set adapter for JsonConfig instance!");
     }
-    
+
 }

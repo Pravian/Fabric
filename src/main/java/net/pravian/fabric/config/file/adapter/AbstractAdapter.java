@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.pravian.fabric.config.ConfigSection;
+import net.pravian.fabric.config.Conversions;
 
 public abstract class AbstractAdapter implements Adapter {
 
@@ -52,20 +53,21 @@ public abstract class AbstractAdapter implements Adapter {
     }
 
     @SuppressWarnings("unchecked")
-    protected void unmapData(Map<String, ?> from, ConfigSection to) {
+    protected void unmapData(Map<? super Object, Object> from, ConfigSection to) {
 
         // Decompose map for section
-        for (String directKey : from.keySet()) {
+        for (Object directKey : from.keySet()) {
             try {
+                final String keyString = Conversions.asString(directKey);
                 final Object value = from.get(directKey);
 
                 if (!(value instanceof Map)) {
-                    to.put(directKey, value);
+                    to.put(keyString, value);
                     continue;
                 }
 
-                ConfigSection newSection = to.createSection(directKey);
-                unmapData((Map<String, ?>) value, newSection);
+                ConfigSection newSection = to.createSection(keyString);
+                unmapData((Map<Object, Object>) value, newSection);
             } catch (Exception ex) {
                 logger.log(Level.SEVERE, "Could not load configuration map: " + to.getFullPath() + "." + directKey);
             }

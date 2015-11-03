@@ -30,12 +30,13 @@ import net.pravian.fabric.config.file.FileConfigOptions;
 import net.pravian.fabric.config.file.adapter.AbstractAdapter;
 
 public class JsonAdapter extends AbstractAdapter {
-    
+
     private final FileConfigOptions options = new FileConfigOptions();
     private final JsonFactory factory = new JsonFactory();
     private final ObjectMapper mapper = new ObjectMapper(factory);
-    private final TypeReference<Map<String, Object>> type = new TypeReference<Map<String, Object>>() {};
-   
+    private final TypeReference<Map<String, Object>> type = new TypeReference<Map<String, Object>>() {
+    };
+
     public JsonAdapter(Logger logger) {
         super(logger);
     }
@@ -47,15 +48,15 @@ public class JsonAdapter extends AbstractAdapter {
 
     @Override
     public boolean read(Reader from, ConfigSection to) {
-        Map<String, Object> dataMap;
-        
+        Map<Object, Object> dataMap;
+
         try {
             dataMap = mapper.readValue(from, type);
         } catch (IOException ex) {
             logger.log(Level.SEVERE, "Could not load configuration!", ex);
             return false;
         }
-        
+
         unmapData(dataMap, to);
         return true;
     }
@@ -65,14 +66,14 @@ public class JsonAdapter extends AbstractAdapter {
 
         Map<String, Object> dataMap = new HashMap<>();
         mapData(from, dataMap);
-        
+
         try {
             mapper.writeValue(to, dataMap);
         } catch (IOException ex) {
             logger.log(Level.SEVERE, "Could not write configuration!", ex);
             return false;
         }
-        
+
         return true;
     }
 }

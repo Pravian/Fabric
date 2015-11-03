@@ -81,6 +81,7 @@ public class YamlConfigFileTest {
         assertThat(data).contains("justastr");
     }
 
+    @Test
     public void writeLoad() {
 
         Logger logger = mock(Logger.class);

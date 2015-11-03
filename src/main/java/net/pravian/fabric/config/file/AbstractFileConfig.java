@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.pravian.fabric.Check;
 import net.pravian.fabric.config.ConfigOptions;
 import net.pravian.fabric.config.memory.MemoryConfig;
 
@@ -86,10 +87,19 @@ public abstract class AbstractFileConfig extends MemoryConfig implements FileCon
 
     @Override
     public boolean saveTo(File file) {
+        Check.notNull(file, "File may not be null");
 
-        if (!file.getParentFile().mkdirs()) {
-            logger.severe("Could not write configuration. Could not create parent directories!");
-            return false;
+        try {
+            file = file.getAbsoluteFile();
+        } catch (Exception ignored) {
+        }
+
+        final File parentFile = file.getParentFile();
+        if (parentFile != null && !parentFile.exists()) {
+            if (!parentFile.mkdirs()) {
+                logger.severe("Could not write configuration. Could not create parent directories!");
+                return false;
+            }
         }
 
         try (Writer writer = new FileWriter(file, true)) {

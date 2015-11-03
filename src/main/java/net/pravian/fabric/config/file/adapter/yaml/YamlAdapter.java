@@ -40,11 +40,12 @@ public class YamlAdapter extends AbstractAdapter {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public boolean read(Reader from, ConfigSection to) {
-        Map<String, Object> dataMap;
+        Map<Object, Object> dataMap;
 
         try {
-            dataMap = (Map<String, Object>) yaml.load(from);
+            dataMap = (Map<Object, Object>) yaml.load(from);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Could not load configuration!", ex);
             return false;

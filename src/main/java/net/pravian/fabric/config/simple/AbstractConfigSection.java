@@ -108,24 +108,25 @@ public abstract class AbstractConfigSection implements ConfigSection {
 
     // TODO: Get this to work...
     /*
-     @Override
-     public void put(String key, Object object) {
-     final char seperator = root.options().pathSeperator();
-        
-         
-     String sectionKey = null;
-     String directKey = key;
-
-     // Find out if we're putting data in a subsection 
-     final int lastSeperator = key.lastIndexOf(seperator);
-     if (lastSeperator != -1) {
-     sectionKey = key.substring(0, lastSeperator);
-     directKey = key.substring(lastSeperator + 1, key.length());
-     }
-        
-     final ConfigSection parentSection = sectionKey == null ? this : createSection(sectionKey);
-        
-     // Put the data
-     parentSection.putDirect(directKey, object);
-     }*/
+     * @Override
+     * public void put(String key, Object object) {
+     * final char seperator = root.options().pathSeperator();
+     *
+     *
+     * String sectionKey = null;
+     * String directKey = key;
+     *
+     * // Find out if we're putting data in a subsection
+     * final int lastSeperator = key.lastIndexOf(seperator);
+     * if (lastSeperator != -1) {
+     * sectionKey = key.substring(0, lastSeperator);
+     * directKey = key.substring(lastSeperator + 1, key.length());
+     * }
+     *
+     * final ConfigSection parentSection = sectionKey == null ? this : createSection(sectionKey);
+     *
+     * // Put the data
+     * parentSection.putDirect(directKey, object);
+     * }
+     */
 }
