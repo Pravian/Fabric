@@ -13,20 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.pravian.fabric.logging;
+package net.pravian.fabric.config.file.adapter.json;
 
 import java.util.logging.Logger;
+import net.pravian.fabric.config.file.FileConfigOptions;
+import net.pravian.fabric.config.file.adapter.Adapter;
+import net.pravian.fabric.config.file.adapter.AdapterConfig;
 
-public class SubLogger extends Logger {
+public class JsonConfig extends AdapterConfig {
 
-    public SubLogger(String name) {
-        super(name, null);
+    public JsonConfig(Logger logger) {
+        super(logger, new JsonAdapter(logger));
+    }
+    
+    @Override
+    public FileConfigOptions options() {
+        return getAdapter().options();
     }
 
-    public SubLogger newSubLogger(String name) {
-        SubLogger subLogger = new SubLogger(name);
-        subLogger.setParent(this);
-        return subLogger;
+    @Override
+    public void setAdapter(Adapter adapter) {
+        throw new UnsupportedOperationException("Cannot set adapter for JsonConfig instance!");
     }
-
+    
 }
