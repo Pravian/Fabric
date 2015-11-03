@@ -62,7 +62,7 @@ public abstract class AbstractAdapter implements Adapter {
                 final Object value = from.get(directKey);
 
                 if (!(value instanceof Map)) {
-                    to.put(keyString, value);
+                    to.set(keyString, value);
                     continue;
                 }
 

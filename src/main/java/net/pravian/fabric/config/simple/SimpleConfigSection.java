@@ -15,15 +15,15 @@
  */
 package net.pravian.fabric.config.simple;
 
+import net.pravian.fabric.config.AbstractConversionConfigSection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import net.pravian.fabric.config.ConfigSection;
 import net.pravian.fabric.config.Conversions;
 
-public class SimpleConfigSection extends AbstractConfigSection implements ConfigSection {
+public class SimpleConfigSection extends AbstractConversionConfigSection {
 
     protected final Map<String, Object> data = new LinkedHashMap<>();
     private final String path;
@@ -65,27 +65,6 @@ public class SimpleConfigSection extends AbstractConfigSection implements Config
     }
 
     @Override
-    public String getString(String key) {
-        return Conversions.asString(get(key));
-    }
-
-    @Override
-    public int getInt(String key) {
-        return Conversions.asInt(get(key));
-    }
-
-    @Override
-    public List<String> getStrings(String key) {
-        return Conversions.asStringList(get(key));
-    }
-
-    @Override
-    public ConfigSection getSection(String key) {
-        Object value = get(key);
-        return value instanceof ConfigSection ? (ConfigSection) value : null;
-    }
-
-    @Override
     public boolean containsDirect(String key) {
         if (key.indexOf(root.options().pathSeperator()) != -1) {
             throw new IllegalArgumentException("Cannot check direct contains in full path!");
@@ -100,7 +79,7 @@ public class SimpleConfigSection extends AbstractConfigSection implements Config
     }
 
     @Override
-    public void putDirect(String key, Object object) {
+    public void setDirect(String key, Object object) {
         if (key.indexOf(root.options().pathSeperator()) != -1) {
             throw new IllegalArgumentException("Cannot put direct in full path!");
         }
@@ -129,7 +108,7 @@ public class SimpleConfigSection extends AbstractConfigSection implements Config
             ConfigSection subSection = section.getSection(directKey);
             if (subSection == null) {
                 subSection = new SimpleConfigSection(section, directKey);
-                section.put(directKey, subSection);
+                section.set(directKey, subSection);
             }
 
             // Next subsection
@@ -138,7 +117,7 @@ public class SimpleConfigSection extends AbstractConfigSection implements Config
         }
 
         SimpleConfigSection newSection = new SimpleConfigSection(section, fullKey);
-        section.put(fullKey, newSection);
+        section.set(fullKey, newSection);
         return newSection;
     }
 

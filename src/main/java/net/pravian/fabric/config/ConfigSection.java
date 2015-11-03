@@ -15,7 +15,6 @@
  */
 package net.pravian.fabric.config;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -33,26 +32,43 @@ public interface ConfigSection {
 
     public Set<String> getKeys();
 
+    //public Set<String> getKeys(boolean deep);
+    public boolean contains(String key);
+
+    public boolean containsDirect(String key);
+
     public Object get(String key);
 
     public Object getDirect(String key);
 
-    public String getString(String key);
+    public void set(String key, Object object);
 
-    public int getInt(String key);
-
-    public List<String> getStrings(String key);
+    public void setDirect(String key, Object object);
 
     public ConfigSection getSection(String key);
 
     public ConfigSection createSection(String key);
 
-    public void put(String key, Object object);
+    public boolean getBoolean(String key);
 
-    public void putDirect(String key, Object object);
+    public byte getByte(String key);
 
-    public boolean contains(String key);
+    public char getChar(String key);
 
-    public boolean containsDirect(String key);
+    public short getShort(String key);
+
+    public int getInt(String key);
+
+    public long getLong(String key);
+
+    public float getFloat(String key);
+
+    public double getDouble(String key);
+
+    public String getString(String key);
+
+    public List<Object> getList(String key);
+
+    public List<String> getStringList(String key);
 
 }

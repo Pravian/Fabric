@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.pravian.fabric.config.simple;
+package net.pravian.fabric.config;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -25,7 +25,7 @@ public abstract class AbstractConfigSection implements ConfigSection {
     protected final Config root;
     protected final ConfigSection parent;
 
-    public AbstractConfigSection() {
+    protected AbstractConfigSection() {
         // Constructor for Config objects
         if (!(this instanceof Config)) {
             throw new AssertionError("Can not instantiate ConfigurationSection when not a config!");
@@ -35,7 +35,7 @@ public abstract class AbstractConfigSection implements ConfigSection {
         this.parent = null;
     }
 
-    public AbstractConfigSection(ConfigSection parent) {
+    protected AbstractConfigSection(ConfigSection parent) {
         this.root = parent.getRoot();
         this.parent = parent;
     }
@@ -87,7 +87,7 @@ public abstract class AbstractConfigSection implements ConfigSection {
     }
 
     @Override
-    public void put(String key, Object object) {
+    public void set(String key, Object object) {
         final Iterator<String> paths = Arrays.asList(key.split("\\.")).iterator();
 
         ConfigSection section = this;
@@ -103,7 +103,7 @@ public abstract class AbstractConfigSection implements ConfigSection {
             directKey = paths.next();
         }
 
-        section.putDirect(directKey, object);
+        section.setDirect(directKey, object);
     }
 
     // TODO: Get this to work...

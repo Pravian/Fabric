@@ -25,8 +25,60 @@ public class Conversions {
         throw new AssertionError();
     }
 
-    public static String asString(Object object) {
-        return object == null ? null : object.toString();
+    public static boolean asBoolean(Object object) {
+        if (object instanceof Boolean) {
+            return ((Boolean) object);
+        }
+
+        if (object == null) {
+            return false;
+        }
+
+        try {
+            return Boolean.parseBoolean(asString(object));
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    public static byte asByte(Object object) {
+        if (object instanceof Number) {
+            return ((Number) object).byteValue();
+        }
+
+        try {
+            return Byte.parseByte(object.toString());
+        } catch (Exception ex) {
+        }
+
+        return 0;
+    }
+
+    public static char asChar(Object object) {
+        if (object instanceof Character) {
+            return (Character) object;
+        }
+
+        try {
+            String s = asString(object);
+            return s.length() == 1 ? s.charAt(0) : (char) 0;
+        } catch (Exception ex) {
+        }
+
+        return 0;
+    }
+
+    public static short asShort(Object object) {
+        if (object instanceof Number) {
+            return ((Number) object).shortValue();
+        }
+
+        try {
+            return Short.parseShort(object.toString());
+        } catch (Exception ex) {
+        }
+
+        return 0;
     }
 
     public static int asInt(Object object) {
@@ -42,32 +94,86 @@ public class Conversions {
         return 0;
     }
 
-    public static List<String> asStringList(Object object) {
-        final List<String> list = new ArrayList<>();
-
-        if (object == null) {
-            return list;
+    public static long asLong(Object object) {
+        if (object instanceof Number) {
+            return ((Number) object).longValue();
         }
+
+        try {
+            return Long.parseLong(object.toString());
+        } catch (Exception ex) {
+        }
+
+        return 0;
+    }
+
+    public static float asFloat(Object object) {
+        if (object instanceof Number) {
+            return ((Number) object).floatValue();
+        }
+
+        try {
+            return Float.parseFloat(object.toString());
+        } catch (Exception ex) {
+        }
+
+        return 0;
+    }
+
+    public static double asDouble(Object object) {
+        if (object instanceof Number) {
+            return ((Number) object).doubleValue();
+        }
+
+        try {
+            return Double.parseDouble(object.toString());
+        } catch (Exception ex) {
+        }
+
+        return 0;
+    }
+
+    public static String asString(Object object) {
+        return object == null ? null : object.toString();
+    }
+
+    public static List<Object> asList(Object object) {
+        if (object == null) {
+            return null;
+        }
+
+        final List<Object> list = new ArrayList<>();
 
         if (object instanceof Iterable<?>) { // Iterables
             for (Object it : (Iterable<?>) object) {
-                final String value = asString(it);
-                if (value != null) {
-                    list.add(value);
-                }
+                list.add(it);
             }
-        } else if (object instanceof String[]) { // String arrays
-            list.addAll(Arrays.asList((String[]) object));
         } else if (object instanceof Object[]) { // Object arrays
-            for (Object it : (Object[]) object) {
-                final String value = asString(it);
-                if (value != null) {
-                    list.add(value);
-                }
-            }
+            list.addAll(Arrays.asList((Object[]) object));
         }
 
         return list;
+    }
+
+    public static List<String> asStringList(Object object) {
+        if (object == null) {
+            return null;
+        }
+
+        final List<Object> objList = asList(object);
+        if (objList == null) {
+            return null;
+        }
+
+        final List<String> strList = new ArrayList<>();
+        for (Object it : objList) {
+            final String s = asString(it);
+            if (s != null) {
+                strList.add(s);
+            }
+        }
+
+        return strList;
     }
 
     public static Object objectify(Object object) {

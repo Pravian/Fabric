@@ -17,7 +17,7 @@ package net.pravian.fabric.config.memory;
 
 import java.util.logging.Logger;
 import net.pravian.fabric.config.ConfigOptions;
-import net.pravian.fabric.config.simple.AbstractConfig;
+import net.pravian.fabric.config.AbstractConfig;
 
 public class MemoryConfig extends AbstractConfig {
 

@@ -32,7 +32,7 @@ public class ConfigTest {
 
         assertTrue(config.getKeys().isEmpty());
 
-        config.put("some", "data");
+        config.set("some", "data");
 
         verifyZeroInteractions(logger);
         assertTrue(config.getKeys().size() == 1);
@@ -62,7 +62,7 @@ public class ConfigTest {
         assertThat(section.getRoot()).isEqualTo(config);
         assertThat(section.getKeys()).isEmpty();
 
-        config.put("some", null);
+        config.set("some", null);
 
         verifyZeroInteractions(logger);
         assertThat(config.getKeys()).isEmpty();
@@ -103,12 +103,12 @@ public class ConfigTest {
         MemoryConfig config = new MemoryConfig(logger);
 
         ConfigSection some = config.createSection("some");
-        some.put("string", "stringy");
-        config.put("some.otherstring", "stringz");
-        config.put("some.int", 42);
-        config.put("some.stringlist", Lists.newArrayList("one", "two", "three"));
+        some.set("string", "stringy");
+        config.set("some.otherstring", "stringz");
+        config.set("some.int", 42);
+        config.set("some.stringlist", Lists.newArrayList("one", "two", "three"));
         ConfigSection section = config.createSection("section");
-        section.put("string", "verystringy");
+        section.set("string", "verystringy");
 
         verifyZeroInteractions(logger);
         assertThat(config.containsDirect("some")).isTrue();
@@ -161,14 +161,14 @@ public class ConfigTest {
         verifyZeroInteractions(logger);
         assertThat(config.getKeys()).containsExactly("some");
 
-        config.put("some", null);
+        config.set("some", null);
 
         // Top level cleanup
         verifyZeroInteractions(logger);
         assertThat(config.getKeys()).isEmpty();
 
         config.createSection("some.sub.section");
-        config.put("some.sub.section", null);
+        config.set("some.sub.section", null);
 
         // Staged cleanup
         verifyZeroInteractions(logger);
@@ -176,7 +176,7 @@ public class ConfigTest {
         assertThat(config.contains("some.sub")).isTrue();
         assertThat(config.contains("some.sub.section")).isFalse();
 
-        config.put("some.sub", null);
+        config.set("some.sub", null);
 
         // Staged cleanup (2)
         verifyZeroInteractions(logger);
@@ -196,7 +196,7 @@ public class ConfigTest {
         Logger logger = mock(Logger.class);
         MemoryConfig config = new MemoryConfig(logger);
 
-        config.put("some.section", "data");
+        config.set("some.section", "data");
 
         verifyZeroInteractions(logger);
         assertThat(config.getKeys()).isNotEmpty();
@@ -218,7 +218,7 @@ public class ConfigTest {
 
         // creatSection overwrites values
         ConfigSection section = config.createSection("some.section");
-        section.put("someint", 42);
+        section.set("someint", 42);
 
         verifyZeroInteractions(logger);
         assertThat(config.contains("some.section.someint")).isTrue();
@@ -230,9 +230,9 @@ public class ConfigTest {
 
         // createSection doesn't overwrite subsections
         config.clear();
-        config.createSection("some.area").put("string", "stringy");
-        config.put("some.area.answer", 42);
-        config.put("some.answer", 10);
+        config.createSection("some.area").set("string", "stringy");
+        config.set("some.area.answer", 42);
+        config.set("some.answer", 10);
 
         verifyZeroInteractions(logger);
 
@@ -258,11 +258,14 @@ public class ConfigTest {
         Logger logger = mock(Logger.class);
         MemoryConfig config = new MemoryConfig(logger);
 
-        config.put("some.string", "stringy");
-        config.put("some.int", 42);
-        config.put("some.stringlist", Lists.newArrayList("one", "two", "three"));
+        config.set("some.string", "stringy");
+        config.set("some.int", 42);
+        config.set("some.stringlist", Lists.newArrayList("one", "two", "three"));
+        config.set("some.boolean", true);
+        config.set("some.float", 24d);
+        config.set("some.double", 42f);
         ConfigSection section = config.createSection("section");
-        section.put("string", "verystringy");
+        section.set("string", "verystringy");
 
         verifyZeroInteractions(logger);
         assertThat(config.contains("some.string")).isTrue();
@@ -272,7 +275,16 @@ public class ConfigTest {
         assertThat(config.getInt("some.int")).isEqualTo(42);
 
         assertThat(config.contains("some.stringlist")).isTrue();
-        assertThat(config.getStrings("some.stringlist")).containsExactly("one", "two", "three");
+        assertThat(config.getStringList("some.stringlist")).containsExactly("one", "two", "three");
+
+        assertThat(config.contains("some.boolean")).isTrue();
+        assertThat(config.getBoolean("some.boolean")).isTrue();
+
+        assertThat(config.contains("some.float")).isTrue();
+        assertThat(config.getFloat("some.float")).isEquivalentAccordingToCompareTo((float) 24);
+
+        assertThat(config.contains("some.double")).isTrue();
+        assertThat(config.getDouble("some.double")).isWithin(0.1).of(42);
 
         assertThat(config.contains("section")).isTrue();
         assertThat(config.getSection("section")).isEqualTo(section);
@@ -281,7 +293,7 @@ public class ConfigTest {
         assertThat(config.getString("section.string")).isEqualTo("verystringy");
 
         assertThat(config.contains("some.dummy")).isFalse();
-        assertThat(config.getStrings("some.stringlistdummy")).isEmpty();
+        assertThat(config.getStringList("some.stringlistdummy")).isNull();
     }
 
     @Test
@@ -290,19 +302,25 @@ public class ConfigTest {
         Logger logger = mock(Logger.class);
         MemoryConfig config = new MemoryConfig(logger);
 
-        config.put("some.string.1", new Object() {
+        config.set("some.string.1", new Object() {
             @Override
             public String toString() {
                 return "stringy";
             }
         });
-        config.put("some.string.2", 20);
-        config.put("some.string.3", Byte.valueOf((byte) 11));
-        config.put("some.int.1", "42");
-        config.put("some.int.2", Integer.valueOf(32));
-        config.put("some.int.3", Byte.valueOf((byte) 123));
-        config.put("some.list.1", new String[]{"one", "two", "three"});
-        config.put("some.list.2", Sets.newHashSet("uno", "dos", "tres"));
+        config.set("some.string.2", 20);
+        config.set("some.string.3", Byte.valueOf((byte) 11));
+        config.set("some.int.1", "42");
+        config.set("some.int.2", Integer.valueOf(32));
+        config.set("some.int.3", Byte.valueOf((byte) 123));
+        config.set("some.list.1", new String[]{"one", "two", "three"});
+        config.set("some.list.2", Sets.newHashSet("uno", "dos", "tres"));
+        config.set("some.boolean.1", true);
+        config.set("some.boolean.2", false);
+        config.set("some.boolean.3", "true");
+        config.set("some.boolean.4", "false");
+        config.set("some.boolean.5", "some random value");
+        config.set("num", 12.4f);
 
         verifyZeroInteractions(logger);
         assertThat(config.getString("some.string.1")).isEqualTo("stringy");
@@ -313,8 +331,21 @@ public class ConfigTest {
         assertThat(config.getInt("some.int.2")).isEqualTo(32);
         assertThat(config.getInt("some.int.3")).isEqualTo(123);
 
-        assertThat(config.getStrings("some.list.1")).containsExactly("one", "two", "three");
-        assertThat(config.getStrings("some.list.2")).containsExactly("uno", "dos", "tres");
+        assertThat(config.getStringList("some.list.1")).containsExactly("one", "two", "three");
+        assertThat(config.getStringList("some.list.2")).containsExactly("uno", "dos", "tres");
+
+        assertThat(config.getBoolean("some.boolean.1")).isTrue();
+        assertThat(config.getBoolean("some.boolean.2")).isFalse();
+        assertThat(config.getBoolean("some.boolean.3")).isTrue();
+        assertThat(config.getBoolean("some.boolean.4")).isFalse();
+        assertThat(config.getBoolean("some.boolean.5")).isFalse();
+
+        assertThat(config.getByte("num")).isEquivalentAccordingToCompareTo((byte) 12);
+        assertThat(config.getShort("num")).isEquivalentAccordingToCompareTo((short) 12);
+        assertThat(config.getInt("num")).isEqualTo(Integer.valueOf(12));
+        assertThat(config.getLong("num")).isEqualTo((long) 12);
+        assertThat(config.getFloat("num")).isEquivalentAccordingToCompareTo(12.4f);
+        assertThat(config.getDouble("num")).isWithin(0.1d).of(12.4d);
     }
 
     @Test
@@ -322,25 +353,25 @@ public class ConfigTest {
         Logger logger = mock(Logger.class);
         MemoryConfig config = new MemoryConfig(logger);
 
-        config.put("first", 10);
-        config.put("second", 20);
-        config.put("third", 30);
+        config.set("first", 10);
+        config.set("second", 20);
+        config.set("third", 30);
 
         verifyZeroInteractions(logger);
         assertThat(config.getKeys()).containsExactly("first", "second", "third").inOrder();
 
         config.clear();
-        config.put("first", 40);
-        config.put("second", 50);
-        config.put("third", 60);
+        config.set("first", 40);
+        config.set("second", 50);
+        config.set("third", 60);
 
         verifyZeroInteractions(logger);
         assertThat(config.getKeys()).containsExactly("first", "second", "third").inOrder();
 
         config.clear();
-        config.put("third", 70);
-        config.put("second", 80);
-        config.put("first", 90);
+        config.set("third", 70);
+        config.set("second", 80);
+        config.set("first", 90);
 
         verifyZeroInteractions(logger);
         assertThat(config.getKeys()).containsExactly("third", "second", "first").inOrder();

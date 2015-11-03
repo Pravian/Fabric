@@ -43,7 +43,7 @@ public class YamlConfigFileTest {
 
         assertThat(config.contains("some.list"));
         assertThat(config.get("some.list")).isInstanceOf(List.class);
-        assertThat(config.getStrings("some.list")).containsExactly("one", "two", "three");
+        assertThat(config.getStringList("some.list")).containsExactly("one", "two", "three");
 
         assertThat(config.contains("some.section"));
         assertThat(config.getSection("some.section")).isInstanceOf(ConfigSection.class);
@@ -55,10 +55,10 @@ public class YamlConfigFileTest {
         Logger logger = mock(Logger.class);
         YamlConfig config = new YamlConfig(logger);
 
-        config.put("some.string", "stringy");
-        config.put("some.int", 42);
-        config.put("some.list", Arrays.asList("one", "two", "three"));
-        config.createSection("some.section").put("string", "justastr");
+        config.set("some.string", "stringy");
+        config.set("some.int", 42);
+        config.set("some.list", Arrays.asList("one", "two", "three"));
+        config.createSection("some.section").set("string", "justastr");
 
         StringWriter writer;
         try {
@@ -89,10 +89,10 @@ public class YamlConfigFileTest {
         Logger logger = mock(Logger.class);
         YamlConfig config = new YamlConfig(logger);
 
-        config.put("some.string", "stringy");
-        config.put("some.int", 42);
-        config.put("some.list", Arrays.asList("one", "two", "three"));
-        config.createSection("some.section").put("string", "justastr");
+        config.set("some.string", "stringy");
+        config.set("some.int", 42);
+        config.set("some.list", Arrays.asList("one", "two", "three"));
+        config.createSection("some.section").set("string", "justastr");
 
         StringWriter writer;
         try {
@@ -115,7 +115,7 @@ public class YamlConfigFileTest {
         assertThat(config.getKeys()).isNotEmpty();
         assertThat(config.getString("some.string")).endsWith("stringy");
         assertThat(config.getInt("some.int")).isEqualTo(42);
-        assertThat(config.getStrings("some.list")).containsExactly("one", "two", "three");
+        assertThat(config.getStringList("some.list")).containsExactly("one", "two", "three");
         assertThat(config.getSection("some.section")).isNotNull();
         assertThat(config.getString("some.section.string")).isEqualTo("justastr");
     }
@@ -143,7 +143,7 @@ public class YamlConfigFileTest {
         assertThat(config.get("directnum")).isEqualTo(2);
         assertThat(config.getString("directstring")).isEqualTo("pizza!");
         assertThat(config.get("42")).isInstanceOf(Boolean.class);
-        assertThat(config.getStrings("list")).containsExactly(
+        assertThat(config.getStringList("list")).containsExactly(
                 "it's true",
                 "unity rules",
                 "A very long string with special characters! @#$%").inOrder();
@@ -161,7 +161,7 @@ public class YamlConfigFileTest {
         assertThat(parent.get("1")).isInstanceOf(Integer.class);
         assertThat(parent.get("7")).isInstanceOf(String.class);
         assertThat(parent.get("list")).isInstanceOf(List.class);
-        assertThat(parent.getStrings("list")).containsExactly("item", "pizza", "fanta").inOrder();
+        assertThat(parent.getStringList("list")).containsExactly("item", "pizza", "fanta").inOrder();
 
     }
 

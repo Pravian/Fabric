@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.pravian.fabric.config.simple;
+package net.pravian.fabric.config;
 
 import java.util.logging.Logger;
 import lombok.Getter;
@@ -21,6 +21,8 @@ import lombok.Setter;
 import net.pravian.fabric.config.Config;
 import net.pravian.fabric.config.ConfigOptions;
 import net.pravian.fabric.config.memory.MemoryConfig;
+import net.pravian.fabric.config.simple.SimpleConfigOptions;
+import net.pravian.fabric.config.simple.SimpleConfigSection;
 
 public abstract class AbstractConfig extends SimpleConfigSection implements Config {
 
@@ -32,11 +34,11 @@ public abstract class AbstractConfig extends SimpleConfigSection implements Conf
     @Setter
     protected Config defaults;
 
-    public AbstractConfig(Logger logger) {
+    protected AbstractConfig(Logger logger) {
         this(logger, null);
     }
 
-    public AbstractConfig(Logger logger, ConfigOptions options) {
+    protected AbstractConfig(Logger logger, ConfigOptions options) {
         this.logger = logger;
         this.options = (options != null ? options : new SimpleConfigOptions());
     }
@@ -52,7 +54,7 @@ public abstract class AbstractConfig extends SimpleConfigSection implements Conf
             defaults = new MemoryConfig(logger);
         }
 
-        defaults.put(key, value);
+        defaults.set(key, value);
     }
 
     @Override
