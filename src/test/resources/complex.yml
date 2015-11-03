@@ -1,0 +1,22 @@
+
+parent:
+  subkey: stringval
+  1: 42
+  7: '77'
+  list:
+  - item
+  - pizza
+  - fanta
+directnum: 2
+directstring: pizza!
+42: true
+list:
+  - it's true
+  - unity rules
+  - 'A very long string with special characters! @#$%'
+multilinewrap: >
+    This is some multiline text.
+    which spans across multiple lines...
+multilinepre: |
+    This is some multiline text.
+    However, this text does preserve newlines!

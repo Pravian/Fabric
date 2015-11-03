@@ -297,6 +297,7 @@ public class ConfigTest {
             }
         });
         config.put("some.string.2", 20);
+        config.put("some.string.3", Byte.valueOf((byte) 11));
         config.put("some.int.1", "42");
         config.put("some.int.2", Integer.valueOf(32));
         config.put("some.int.3", Byte.valueOf((byte) 123));
@@ -306,6 +307,7 @@ public class ConfigTest {
         verifyZeroInteractions(logger);
         assertThat(config.getString("some.string.1")).isEqualTo("stringy");
         assertThat(config.getString("some.string.2")).isEqualTo("20");
+        assertThat(config.getString("some.string.3")).isEqualTo("11");
 
         assertThat(config.getInt("some.int.1")).isEqualTo(42);
         assertThat(config.getInt("some.int.2")).isEqualTo(32);
@@ -313,6 +315,35 @@ public class ConfigTest {
 
         assertThat(config.getStrings("some.list.1")).containsExactly("one", "two", "three");
         assertThat(config.getStrings("some.list.2")).containsExactly("uno", "dos", "tres");
+    }
+
+    @Test
+    public void ordering() {
+        Logger logger = mock(Logger.class);
+        MemoryConfig config = new MemoryConfig(logger);
+
+        config.put("first", 10);
+        config.put("second", 20);
+        config.put("third", 30);
+
+        verifyZeroInteractions(logger);
+        assertThat(config.getKeys()).containsExactly("first", "second", "third").inOrder();
+
+        config.clear();
+        config.put("first", 40);
+        config.put("second", 50);
+        config.put("third", 60);
+
+        verifyZeroInteractions(logger);
+        assertThat(config.getKeys()).containsExactly("first", "second", "third").inOrder();
+
+        config.clear();
+        config.put("third", 70);
+        config.put("second", 80);
+        config.put("first", 90);
+
+        verifyZeroInteractions(logger);
+        assertThat(config.getKeys()).containsExactly("third", "second", "first").inOrder();
     }
 
 }
