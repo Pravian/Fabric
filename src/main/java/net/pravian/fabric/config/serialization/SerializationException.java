@@ -13,25 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.pravian.fabric.config;
+package net.pravian.fabric.config.serialization;
 
-import java.util.logging.Logger;
-import net.pravian.fabric.config.serialization.ConfigSerialization;
+public class SerializationException extends RuntimeException {
 
-public interface Config extends ConfigSection {
+    private static final long serialVersionUID = 73165523421991L;
 
-    public ConfigOptions options();
+    public SerializationException(String message) {
+        super(message);
+    }
 
-    public ConfigSerialization serialization();
+    public SerializationException(Throwable thrwbl) {
+        super(thrwbl);
+    }
 
-    public Logger getLogger();
-
-    public void setDefaults(Config defaults);
-
-    public Config getDefaults();
-
-    public void setDefault(String key, Object value);
-
-    public Object getDefault(String key);
+    public SerializationException(String string, Throwable thrwbl) {
+        super(string, thrwbl);
+    }
 
 }

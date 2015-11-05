@@ -15,9 +15,9 @@
  */
 package net.pravian.fabric.config.file;
 
-import net.pravian.fabric.config.simple.SimpleConfigOptions;
+import net.pravian.fabric.config.memory.MemoryConfigOptions;
 
-public class FileConfigOptions extends SimpleConfigOptions {
+public class FileConfigOptions extends MemoryConfigOptions {
 
     private boolean copyFromJar = false;
 

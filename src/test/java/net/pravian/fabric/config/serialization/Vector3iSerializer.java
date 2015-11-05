@@ -1,0 +1,44 @@
+/*
+ * Copyright 2015 Jerom van der Sar.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package net.pravian.fabric.config.serialization;
+
+import net.pravian.fabric.config.ConfigSection;
+
+public class Vector3iSerializer implements ConfigSerializer<Vector3i> {
+
+    @Override
+    public Vector3i readFrom(ConfigSection section) throws SerializationException {
+        if (!section.contains("x")
+                || !section.contains("y")
+                || !section.contains("z")) {
+            throw new SerializationException("XYZ coordinates incomplete");
+        }
+
+        Vector3i vec = new Vector3i();
+        vec.x = section.getInt("x");
+        vec.y = section.getInt("y");
+        vec.z = section.getInt("z");
+        return vec;
+    }
+
+    @Override
+    public void writeTo(ConfigSection section, Vector3i vec) throws SerializationException {
+        section.set("x", vec.x);
+        section.set("y", vec.y);
+        section.set("z", vec.z);
+    }
+
+}

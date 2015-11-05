@@ -21,26 +21,32 @@ import lombok.Setter;
 import net.pravian.fabric.config.Config;
 import net.pravian.fabric.config.ConfigOptions;
 import net.pravian.fabric.config.memory.MemoryConfig;
-import net.pravian.fabric.config.simple.SimpleConfigOptions;
-import net.pravian.fabric.config.simple.SimpleConfigSection;
+import net.pravian.fabric.config.memory.MemoryConfigOptions;
+import net.pravian.fabric.config.memory.MemoryConfigSection;
+import net.pravian.fabric.config.serialization.ConfigSerialization;
 
-public abstract class AbstractConfig extends SimpleConfigSection implements Config {
+public abstract class AbstractConfig extends MemoryConfigSection implements Config {
 
     @Getter
     protected final Logger logger;
-    @Getter
     protected final ConfigOptions options;
+    protected final ConfigSerialization serialization;
     @Getter
     @Setter
     protected Config defaults;
 
     protected AbstractConfig(Logger logger) {
-        this(logger, null);
+        this(logger, null, null);
     }
 
     protected AbstractConfig(Logger logger, ConfigOptions options) {
+        this(logger, options, null);
+    }
+
+    protected AbstractConfig(Logger logger, ConfigOptions options, ConfigSerialization serialization) {
         this.logger = logger;
-        this.options = (options != null ? options : new SimpleConfigOptions());
+        this.options = (options != null ? options : new MemoryConfigOptions());
+        this.serialization = (serialization != null ? serialization : new ConfigSerialization());
     }
 
     @Override
@@ -49,7 +55,12 @@ public abstract class AbstractConfig extends SimpleConfigSection implements Conf
     }
 
     @Override
-    public void putDefault(String key, Object value) {
+    public ConfigSerialization serialization() {
+        return serialization;
+    }
+
+    @Override
+    public void setDefault(String key, Object value) {
         if (defaults == null) {
             defaults = new MemoryConfig(logger);
         }

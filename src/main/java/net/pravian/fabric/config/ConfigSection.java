@@ -17,6 +17,9 @@ package net.pravian.fabric.config;
 
 import java.util.List;
 import java.util.Set;
+import net.pravian.fabric.config.serialization.ConfigReadable;
+import net.pravian.fabric.config.serialization.ConfigWritable;
+import net.pravian.fabric.config.serialization.SerializationException;
 
 public interface ConfigSection {
 
@@ -30,25 +33,39 @@ public interface ConfigSection {
 
     public String getFullPath();
 
+    public ConfigSection getSection(String key);
+
+    public ConfigSection createSection(String key);
+
     public Set<String> getKeys();
 
-    //public Set<String> getKeys(boolean deep);
+    public Set<String> getKeysDeep();
+
     public boolean contains(String key);
 
     public boolean containsDirect(String key);
 
     public Object get(String key);
 
-    public Object getDirect(String key);
-
     public void set(String key, Object object);
+
+    public Object getDirect(String key);
 
     public void setDirect(String key, Object object);
 
-    public ConfigSection getSection(String key);
+    public <T> T getSerializable(String key, Class<T> clazz) throws SerializationException;
 
-    public ConfigSection createSection(String key);
+    public <T> void setSerializable(String key, T serializable) throws SerializationException;
 
+    public void read(String key, ConfigReadable readable) throws SerializationException;
+
+    public void write(String key, ConfigWritable writable) throws SerializationException;
+
+    public boolean readSafe(String key, ConfigReadable readable);
+
+    public boolean writeSafe(String key, ConfigWritable writable);
+
+    // Types
     public boolean getBoolean(String key);
 
     public byte getByte(String key);

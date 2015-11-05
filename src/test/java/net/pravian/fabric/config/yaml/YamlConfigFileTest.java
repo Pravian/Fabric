@@ -8,7 +8,6 @@ import static org.mockito.Mockito.*;
 import static com.google.common.truth.Truth.*;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;

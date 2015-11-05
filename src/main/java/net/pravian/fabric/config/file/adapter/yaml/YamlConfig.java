@@ -17,9 +17,9 @@ package net.pravian.fabric.config.file.adapter.yaml;
 
 import java.util.logging.Logger;
 import net.pravian.fabric.config.file.adapter.Adapter;
-import net.pravian.fabric.config.file.adapter.AdapterConfig;
+import net.pravian.fabric.config.file.adapter.AdapterFileConfig;
 
-public class YamlConfig extends AdapterConfig {
+public class YamlConfig extends AdapterFileConfig {
 
     public YamlConfig(Logger logger) {
         super(logger, new YamlAdapter(logger));

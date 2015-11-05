@@ -13,27 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.pravian.fabric.config.file.adapter.json;
+package net.pravian.fabric.config.file.adapter;
 
+import java.io.Reader;
+import java.io.Writer;
 import java.util.logging.Logger;
-import net.pravian.fabric.config.file.FileConfigOptions;
-import net.pravian.fabric.config.file.adapter.Adapter;
-import net.pravian.fabric.config.file.adapter.AdapterFileConfig;
+import lombok.Getter;
+import lombok.Setter;
+import net.pravian.fabric.config.file.AbstractFileConfig;
 
-public class JsonConfig extends AdapterFileConfig {
+public class AdapterFileConfig extends AbstractFileConfig {
 
-    public JsonConfig(Logger logger) {
-        super(logger, new JsonAdapter(logger));
+    @Getter
+    @Setter
+    private Adapter adapter;
+
+    public AdapterFileConfig(Logger logger, Adapter adapter) {
+        super(logger, adapter.options());
+        this.adapter = adapter;
     }
 
     @Override
-    public FileConfigOptions options() {
-        return getAdapter().options();
+    public boolean loadFrom(Reader reader) {
+        return adapter.read(reader, this);
     }
 
     @Override
-    public void setAdapter(Adapter adapter) {
-        throw new UnsupportedOperationException("Cannot set adapter for JsonConfig instance!");
+    public boolean saveTo(Writer writer) {
+        return adapter.write(this, writer);
     }
 
 }

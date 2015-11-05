@@ -13,34 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.pravian.fabric.config.file.adapter;
+package net.pravian.fabric.config.memory;
 
-import java.io.Reader;
-import java.io.Writer;
-import java.util.logging.Logger;
-import lombok.Getter;
-import lombok.Setter;
-import net.pravian.fabric.config.file.AbstractFileConfig;
+import net.pravian.fabric.config.ConfigOptions;
 
-public class AdapterConfig extends AbstractFileConfig {
+public class MemoryConfigOptions implements ConfigOptions {
 
-    @Getter
-    @Setter
-    private Adapter adapter;
+    private char pathSeperator = '.';
+    private boolean showDefaults = false;
 
-    public AdapterConfig(Logger logger, Adapter adapter) {
-        super(logger, adapter.options());
-        this.adapter = adapter;
+    @Override
+    public MemoryConfigOptions pathSeperator(char seperator) {
+        this.pathSeperator = seperator;
+        return this;
     }
 
     @Override
-    public boolean loadFrom(Reader reader) {
-        return adapter.read(reader, this);
+    public char pathSeperator() {
+        return pathSeperator;
     }
 
     @Override
-    public boolean saveTo(Writer writer) {
-        return adapter.write(this, writer);
+    public boolean showDefaults() {
+        return showDefaults;
+    }
+
+    @Override
+    public ConfigOptions showDefaults(boolean copy) {
+        this.showDefaults = copy;
+        return this;
     }
 
 }

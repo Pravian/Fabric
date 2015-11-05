@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.pravian.fabric.config.simple;
+package net.pravian.fabric.config.memory;
 
+import java.util.HashSet;
 import net.pravian.fabric.config.AbstractConversionConfigSection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -22,19 +23,20 @@ import java.util.Objects;
 import java.util.Set;
 import net.pravian.fabric.config.ConfigSection;
 import net.pravian.fabric.config.Conversions;
+import net.pravian.fabric.config.serialization.SerializationException;
 
-public class SimpleConfigSection extends AbstractConversionConfigSection {
+public class MemoryConfigSection extends AbstractConversionConfigSection {
 
     protected final Map<String, Object> data = new LinkedHashMap<>();
     private final String path;
     private final String fullPath;
 
-    protected SimpleConfigSection() {
+    protected MemoryConfigSection() {
         this.path = "";
         this.fullPath = "";
     }
 
-    protected SimpleConfigSection(ConfigSection parent, String directKey) {
+    protected MemoryConfigSection(ConfigSection parent, String directKey) {
         super(parent);
         this.path = directKey;
         this.fullPath = root.equals(parent) ? directKey : parent.getFullPath() + root.options().pathSeperator() + directKey;
@@ -51,17 +53,35 @@ public class SimpleConfigSection extends AbstractConversionConfigSection {
     }
 
     @Override
+    public void clear() {
+        data.clear();
+    }
+
+    @Override
     public Set<String> getKeys() {
         return data.keySet();
     }
 
     @Override
-    public Object getDirect(String key) {
-        if (key.indexOf(root.options().pathSeperator()) != -1) {
-            throw new IllegalArgumentException("Cannot get direct value from full path!");
+    public Set<String> getKeysDeep() {
+        final char sep = getRoot().options().pathSeperator();
+
+        final Set<String> keys = new HashSet<>();
+
+        for (String topKey : getKeys()) {
+            keys.add(topKey);
+
+            final Object value = getDirect(topKey);
+            if (!(value instanceof ConfigSection)) {
+                continue;
+            }
+
+            for (String subKey : ((ConfigSection) value).getKeysDeep()) {
+                keys.add(topKey + sep + subKey);
+            }
         }
 
-        return data.get(key);
+        return keys;
     }
 
     @Override
@@ -74,8 +94,12 @@ public class SimpleConfigSection extends AbstractConversionConfigSection {
     }
 
     @Override
-    public void clear() {
-        data.clear();
+    public Object getDirect(String key) {
+        if (key.indexOf(root.options().pathSeperator()) != -1) {
+            throw new IllegalArgumentException("Cannot get direct value from full path!");
+        }
+
+        return data.get(key);
     }
 
     @Override
@@ -84,10 +108,10 @@ public class SimpleConfigSection extends AbstractConversionConfigSection {
             throw new IllegalArgumentException("Cannot put direct in full path!");
         }
 
-        if (object != null) {
-            data.put(key, Conversions.objectify(object));
-        } else {
+        if (object == null) {
             data.remove(key);
+        } else {
+            data.put(key, Conversions.objectify(object));
         }
     }
 
@@ -107,7 +131,7 @@ public class SimpleConfigSection extends AbstractConversionConfigSection {
             // Get/create subsection
             ConfigSection subSection = section.getSection(directKey);
             if (subSection == null) {
-                subSection = new SimpleConfigSection(section, directKey);
+                subSection = new MemoryConfigSection(section, directKey);
                 section.set(directKey, subSection);
             }
 
@@ -116,7 +140,7 @@ public class SimpleConfigSection extends AbstractConversionConfigSection {
             fullKey = fullKey.substring(sepIndex + 1, fullKey.length());
         }
 
-        SimpleConfigSection newSection = new SimpleConfigSection(section, fullKey);
+        MemoryConfigSection newSection = new MemoryConfigSection(section, fullKey);
         section.set(fullKey, newSection);
         return newSection;
     }
@@ -136,7 +160,7 @@ public class SimpleConfigSection extends AbstractConversionConfigSection {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final SimpleConfigSection other = (SimpleConfigSection) obj;
+        final MemoryConfigSection other = (MemoryConfigSection) obj;
         return Objects.equals(this.fullPath, other.fullPath);
     }
 }

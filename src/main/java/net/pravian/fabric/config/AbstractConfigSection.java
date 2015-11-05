@@ -17,8 +17,14 @@ package net.pravian.fabric.config;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.logging.Level;
+import javax.naming.ConfigurationException;
 import net.pravian.fabric.config.Config;
 import net.pravian.fabric.config.ConfigSection;
+import net.pravian.fabric.config.serialization.ConfigReadable;
+import net.pravian.fabric.config.serialization.ConfigSerializer;
+import net.pravian.fabric.config.serialization.ConfigWritable;
+import net.pravian.fabric.config.serialization.SerializationException;
 
 public abstract class AbstractConfigSection implements ConfigSection {
 
@@ -55,6 +61,84 @@ public abstract class AbstractConfigSection implements ConfigSection {
         return get(key) != null;
     }
 
+    //
+    // ConfigReadable & ConfigWritable
+    //
+    @Override
+    public void read(String key, ConfigReadable readable) throws SerializationException {
+        ConfigSection section = getSection(key);
+        if (section != null) {
+            readable.readFrom(section);
+        }
+    }
+
+    @Override
+    public void write(String key, ConfigWritable writable) throws SerializationException {
+        ConfigSection section = createSection(key);
+        writable.writeTo(section);
+    }
+
+    @Override
+    public boolean readSafe(String key, ConfigReadable readable) {
+        try {
+            read(key, readable);
+            return true;
+        } catch (SerializationException cex) {
+            getRoot().getLogger().log(Level.SEVERE, "Could not read readable object from " + key, cex);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean writeSafe(String key, ConfigWritable writable) {
+        try {
+            write(key, writable);
+            return true;
+        } catch (SerializationException cex) {
+            getRoot().getLogger().log(Level.SEVERE, "Could not write writable object from " + key, cex);
+            return false;
+        }
+    }
+
+    //
+    // ConfigSerializer
+    //
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> void setSerializable(String fullKey, T object) {
+        if (object == null) {
+            set(fullKey, null);
+            return;
+        }
+
+        final Class<T> clazz = (Class<T>) object.getClass();
+
+        if (!root.serialization().hasSerializer(clazz)) {
+            throw new SerializationException("Could not serialize object. No serializer present for " + clazz.getName());
+        }
+
+        final ConfigSerializer<T> serializer = root.serialization().getSerializer(clazz);
+        serializer.writeTo(createSection(fullKey), object);
+    }
+
+    @Override
+    public <T> T getSerializable(String fullKey, Class<T> clazz) {
+        if (!root.serialization().hasSerializer(clazz)) {
+            throw new SerializationException("Could not deserialize object. No serializer present for " + clazz.getName());
+        }
+
+        final ConfigSection section = getSection(fullKey);
+        if (section == null) {
+            return null;
+        }
+
+        final ConfigSerializer<T> serializer = root.serialization().getSerializer(clazz);
+        return serializer.readFrom(section);
+    }
+
+    //
+    // get & set
+    //
     @Override
     public Object get(String fullKey) {
         final char seperator = getRoot().options().pathSeperator();

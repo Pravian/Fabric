@@ -13,25 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.pravian.fabric.config;
+package net.pravian.fabric.config.serialization;
 
-import java.util.logging.Logger;
-import net.pravian.fabric.config.serialization.ConfigSerialization;
+import net.pravian.fabric.config.ConfigSection;
 
-public interface Config extends ConfigSection {
+public interface ConfigSerializer<T extends Object> {
 
-    public ConfigOptions options();
+    public T readFrom(ConfigSection section) throws SerializationException;
 
-    public ConfigSerialization serialization();
-
-    public Logger getLogger();
-
-    public void setDefaults(Config defaults);
-
-    public Config getDefaults();
-
-    public void setDefault(String key, Object value);
-
-    public Object getDefault(String key);
+    public void writeTo(ConfigSection section, T object) throws SerializationException;
 
 }

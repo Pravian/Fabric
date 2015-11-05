@@ -102,7 +102,7 @@ public abstract class AbstractFileConfig extends MemoryConfig implements FileCon
             }
         }
 
-        try (Writer writer = new FileWriter(file, true)) {
+        try (Writer writer = new FileWriter(file, false)) {
             return saveTo(writer);
         } catch (IOException ioex) {
             logger.log(Level.SEVERE, "Could write configuration. File is a directory!", ioex);

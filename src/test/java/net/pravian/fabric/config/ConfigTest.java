@@ -262,8 +262,8 @@ public class ConfigTest {
         config.set("some.int", 42);
         config.set("some.stringlist", Lists.newArrayList("one", "two", "three"));
         config.set("some.boolean", true);
-        config.set("some.float", 24d);
-        config.set("some.double", 42f);
+        config.set("some.float", 24D);
+        config.set("some.double", 42F);
         ConfigSection section = config.createSection("section");
         section.set("string", "verystringy");
 
@@ -281,10 +281,10 @@ public class ConfigTest {
         assertThat(config.getBoolean("some.boolean")).isTrue();
 
         assertThat(config.contains("some.float")).isTrue();
-        assertThat(config.getFloat("some.float")).isEquivalentAccordingToCompareTo((float) 24);
+        assertThat(config.getFloat("some.float")).isEquivalentAccordingToCompareTo(24F);
 
         assertThat(config.contains("some.double")).isTrue();
-        assertThat(config.getDouble("some.double")).isWithin(0.1).of(42);
+        assertThat(config.getDouble("some.double")).isWithin(0.1D).of(42D);
 
         assertThat(config.contains("section")).isTrue();
         assertThat(config.getSection("section")).isEqualTo(section);
@@ -343,9 +343,9 @@ public class ConfigTest {
         assertThat(config.getByte("num")).isEquivalentAccordingToCompareTo((byte) 12);
         assertThat(config.getShort("num")).isEquivalentAccordingToCompareTo((short) 12);
         assertThat(config.getInt("num")).isEqualTo(Integer.valueOf(12));
-        assertThat(config.getLong("num")).isEqualTo((long) 12);
-        assertThat(config.getFloat("num")).isEquivalentAccordingToCompareTo(12.4f);
-        assertThat(config.getDouble("num")).isWithin(0.1d).of(12.4d);
+        assertThat(config.getLong("num")).isEqualTo(12L);
+        assertThat(config.getFloat("num")).isEquivalentAccordingToCompareTo(12.4F);
+        assertThat(config.getDouble("num")).isWithin(0.1D).of(12.4D);
     }
 
     @Test
@@ -375,6 +375,47 @@ public class ConfigTest {
 
         verifyZeroInteractions(logger);
         assertThat(config.getKeys()).containsExactly("third", "second", "first").inOrder();
+    }
+
+    @Test
+    public void keys() {
+        Logger logger = mock(Logger.class);
+        MemoryConfig config = new MemoryConfig(logger);
+
+        config.createSection("some.relevant.key");
+        config.createSection("some.other.key");
+        config.createSection("this");
+        config.set("number", 42);
+        config.set("somewhere.elses.property", "string");
+        config.set("somewhere.elses.land", "someland");
+
+        verifyZeroInteractions(logger);
+        assertThat(config.getKeysDeep()).containsExactly(
+                "some",
+                "some.relevant",
+                "some.relevant.key",
+                "some.other",
+                "some.other.key",
+                "this",
+                "number",
+                "somewhere",
+                "somewhere.elses",
+                "somewhere.elses.property",
+                "somewhere.elses.land"
+        );
+
+        assertThat(config.getKeys()).containsExactly(
+                "some",
+                "this",
+                "number",
+                "somewhere"
+        );
+
+        assertThat(config.getSection("somewhere.elses").getKeysDeep()).containsExactly(
+                "property",
+                "land"
+        );
+
     }
 
 }
